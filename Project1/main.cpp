@@ -10,40 +10,74 @@ interface Jewelry
 class Gold : public Jewelry
 {
 public:
+    class Builder
+    {
+    public:
+        Builder& setName(string name)
+        {
+            this->name = name;
+            return *this;
+        }
+
+        Builder& setPrice(int price)
+        {
+            this->price = price;
+            return *this;
+        }
+
+        Gold* build()
+        {
+            return new Gold{ name, price };
+        }
+
+    private:
+        string name;
+        int price;
+    };
+
     void showInfo() override
     {
         cout << name << endl;
         cout << price << endl;
     }
 private:
-    string name = "GOLD";
-    int price = 100;
+    Gold(string alias, int price)
+        : name{ name }, price{ price } { }
+
+    string name;
+    int price;
 };
 
 class Ruby : public Jewelry
 {
 public:
+    Ruby(string name, int price)
+        : name{ name }, price{ price } { }
+
     void showInfo() override
     {
         cout << name << endl;
         cout << price << endl;
     }
 private:
-    string name = "Ruby";
-    int price = 200;
+    string name;
+    int price;
 };
 
 class Diamond : public Jewelry
 {
 public:
+    Diamond(string name, int price)
+        : name{ name }, price{ price } { }
+
     void showInfo() override
     {
         cout << name << endl;
         cout << price << endl;
     }
 private:
-    string name = "Diamond";
-    int price = 300;
+    string name;
+    int price;
 };
 
 class JewelryFactory
@@ -55,21 +89,21 @@ public:
         return instance;
     }
 
-    Jewelry* makeJewelry(string name)
+    Jewelry* makeJewelry(string name, int price)
     {
-        if (name == "gold") return new Gold();
-        if (name == "ruby") return new Ruby();
-        if (name == "diamond") return new Diamond();
-        return nullptr;
+        if (name == "ruby") return new Ruby(name, price);
+        if (name == "diamond") return new Diamond(name, price);
+        return Gold::Builder().setName(name).setPrice(price).build();
     }
 
 private:
     JewelryFactory() {}
 };
 
-int main() {
+int main()
+{
     JewelryFactory& fac = JewelryFactory::getInstance();
-    fac.makeJewelry("gold")->showInfo();
-    fac.makeJewelry("ruby")->showInfo();
-    fac.makeJewelry("diamond")->showInfo();
+    Jewelry* mine = fac.makeJewelry("gold", 1000);
+
+    mine->showInfo();
 }
